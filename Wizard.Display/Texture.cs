@@ -27,14 +27,19 @@ namespace Wizard.Draw
 
 		public void Draw(Render render, double delta_time)
 		{
-			Draw(render, 0, 0, 32);
-		}
-		public void Draw(Render render, int x, int y, int tile_size)
-		{
-			SDL_Rect rect = new SDL_Rect { x = x/* - ((Width-tile_size)/2)*/, y = y - (Height - tile_size), w = Width, h = Height };
+			SDL_Rect rect = new SDL_Rect { x = 0, y = 0, w = Width, h = Height };
 			SDL_RenderCopy(render.Context, _Texture, (IntPtr)null, ref rect);
 		}
-
+		public void Draw(Render render, int x, int y, int tile_size )
+		{
+			Draw(render, x, y, tile_size, 255,255,255);
+		}
+		public void Draw(Render render, int x, int y, int tile_size, byte r, byte g, byte b)
+		{
+			SDL_SetTextureColorMod(_Texture, r, g, b);
+			SDL_Rect rect = new SDL_Rect { x = x - ((Width-tile_size)/2), y = y - (Height - tile_size), w = Width, h = Height };
+			SDL_RenderCopy(render.Context, _Texture, (IntPtr)null, ref rect);
+		}
 		IntPtr _Texture;
 	}
 }

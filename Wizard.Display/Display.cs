@@ -78,9 +78,9 @@ namespace Wizard.Draw
 
 		public void Quit() => Running = false;
 
-		public static Display CreateDisplay(bool create_render = true)
+		public static Display CreateDisplay( string title, int x, int y, int w, int h, bool create_render = true)
 		{
-			var wndw = SDL_CreateWindow("Testing Window", 100, 100, 800, 600, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
+			var wndw = SDL_CreateWindow(title, x, y, w, h, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
 			var dspl = new Display(wndw);
 			if (create_render)
 				dspl.DrawContext = Render.CreateRender(wndw);

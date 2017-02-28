@@ -4,13 +4,16 @@ namespace Wizard
 {
 	public class Prop : IDraw
 	{
-		private const double MoveScale = 1.0;
+		private const double MoveScale = 1.2;
 
 		public Point Position;
 		public Point MovingTo;
 		public Point[] Bounds;
 		public Texture Texture;
 		public bool CanMove = false;
+		public bool BlocksMove = true;
+		public Point Direction = Point.Zero;
+
 
 		public Prop(int x, int y, Point[] bounds = null)
 			: this(new Point(x, y), bounds)
@@ -21,13 +24,17 @@ namespace Wizard
 			Position = position;
 			MovingTo = position;
 			Bounds = bounds ?? new Point[0];
+			r = 255;
+			b = 255;
+			g = 255;
 		}
 
 		public void SetMove(Point direction)
 		{
+			Direction = direction;
 			_MoveAnim = 0.0;
-			MovingTo = Position.Add( direction );
-			_Anim = true;
+			MovingTo = Position.Add(direction);
+			Animating = true;
 			_Moving = true;
 		}
 
@@ -38,7 +45,7 @@ namespace Wizard
 
 		public virtual void Tick()
 		{
-			_Anim = false;
+			Animating = false;
 			_MoveAnim = 0.0;
 			if (_Moving)
 			{
@@ -51,23 +58,24 @@ namespace Wizard
 
 		private bool _Moving;
 		private double _MoveAnim;
-		private bool _Anim;
+		protected bool Animating { get; private set; }
+		protected byte r, g, b;
 
 		public void Draw(Render render, double delta_time)
 		{
 			int x = Position.X * DM.TileSize;
 			int y = Position.Y * DM.TileSize;
-			if (_Anim)
+			if (Animating)
 				// Times don't quite match up.. will need to make more clever or impl a timer!
-				_MoveAnim += delta_time * (1.0/DM.TickTime) * MoveScale;
+				_MoveAnim += delta_time * (1.0 / DM.TickTime) * MoveScale;
 			if (_MoveAnim > 1.0)
 				_MoveAnim = 1.0;
 			x += (int)((MovingTo.X - Position.X) * DM.TileSize * _MoveAnim);
 			y += (int)((MovingTo.Y - Position.Y) * DM.TileSize * _MoveAnim);
 
-			if (_Anim && _MoveAnim >= 1.0)
-				_Anim = false;
-			Texture.Draw(render, x, y, DM.TileSize);
+			if (Animating && _MoveAnim >= 1.0)
+				Animating = false;
+			Texture.Draw(render, x, y, DM.TileSize, r, g, b);
 		}
 	}
 }

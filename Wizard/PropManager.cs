@@ -43,7 +43,7 @@ namespace Wizard
 				&& (p.Position.Equals(targt)
 				|| p.Bounds.Select(b => b.Add(p.Position)).Any(b => b.Equals(targt)))
 			).FirstOrDefault();
-			if (bunp != null && (!bunp.CanMove || !Move(bunp, direction)))
+			if (bunp != null && bunp.BlocksMove && (!bunp.CanMove || Move(bunp, direction)) )
 				return false;
 			prop.SetMove(direction);
 			_MovedProps.Add(prop);
@@ -55,11 +55,14 @@ namespace Wizard
 		{
 			foreach (var prop in _MovedProps)
 			{
-				if (prop.MovingTo.Y != 0)
+				if (prop.Direction.Y != 0)
 				{
-					var t_y = prop.Position.Y + prop.MovingTo.Y;
 					_Props.Remove(prop);
-					_Props.Insert(_Props.FindIndex(p => p.Position.Y > t_y), prop);
+					int at = _Props.FindIndex(p => p.Position.Y > prop.MovingTo.Y);
+					if (at != -1)
+						_Props.Insert(at, prop);
+					else
+						_Props.Add(prop);
 				}
 			}
 			_MovedProps.Clear();

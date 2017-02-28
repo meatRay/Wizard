@@ -9,6 +9,19 @@ namespace Wizard
 	public class Thinker : Prop
 	{
 		public double Sight = 10;
+		public bool Alive { get; private set; } = true;
+
+		public void Kill()
+		{
+			Alive = false;
+			BlocksMove = false;
+			CanMove = false;
+			if (!Animating)
+				MovingTo = Position;
+			g = 50;
+			b = 50;
+			r = 100;
+		}
 
 		public Thinker()
 			: this(0, 0)
@@ -27,8 +40,11 @@ namespace Wizard
 
 		public override void Tick()
 		{
-			base.Tick();
-			Think(_Context);
+			if (Alive)
+			{
+				base.Tick();
+				Think(_Context);
+			}
 		}
 
 		public virtual void Spawn(World world_context)

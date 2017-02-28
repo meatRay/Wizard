@@ -5,10 +5,46 @@ using Wizard.Draw;
 
 namespace Wizard
 {
-	class DM
+	public class DM
 	{
 		public static int TileSize = 32;
-		public static double TickTime = 1.0;
+		public static double TickTime = 0.5;
+		public static Random Dice = new Random();
+	}
+
+	public static class Directions
+	{
+		private static Point[] _dirs { get; } = new Point[8]
+		{
+			new Point(0, -1),new Point(1, -1),new Point(1, 0),new Point(1, 1),
+			new Point(0, 1),new Point(-1, 1),new Point(-1, 0),new Point(-1, -1),
+		};
+
+		public static Point North { get; } = _dirs[0];
+		public static Point NorthEast { get; } = _dirs[1];
+		public static Point East { get; } = _dirs[2];
+		public static Point SouthEast { get; } = _dirs[3];
+		public static Point South { get; } = _dirs[4];
+		public static Point SouthWest { get; } = _dirs[5];
+		public static Point West { get; } = _dirs[6];
+		public static Point NorthWest { get; } = _dirs[7];
+
+		public enum Angle { NONE, CW45 = 1, CW90 = 2, CCW45 = -1, CCW90 = -2 }
+
+		public static Point Rotate(Point direction, Angle angle)
+		{
+			// Forgit me father for I have sinned.
+			// I should import a real math lib
+			var at = Array.FindIndex(_dirs, d => direction.Equals(d));
+			int togo = (int)angle;
+			if (at + togo < 0)
+				at = 8 - (0 - (at + togo));
+			else if (at + togo > 7)
+				at = ((at + togo) - 8);
+			else
+				at += togo;
+			return _dirs[at];
+		}
 	}
 
 	//Lifting the one from System.Drawing means importing the entire dll..
@@ -42,6 +78,10 @@ namespace Wizard
 		public PropManager Props { get; private set; }
 		public Display Display;
 
+		public World()
+			: this(Display.CreateDisplay("Wizard.Draw", 100, 100, 800, 576))
+		{ }
+
 		public World(Display display)
 		{
 			Background = new List<IDraw>();
@@ -56,7 +96,7 @@ namespace Wizard
 			Display.Run();
 		}
 
-		public static void Main()
+		/*public static void Main()
 		{
 			using (var world = new World(Display.CreateDisplay()))
 			{
@@ -81,7 +121,7 @@ namespace Wizard
 
 				world.Run();
 			}
-		}
+		}*/
 
 		public void Draw(Render render, double delta_time)
 		{
@@ -108,6 +148,19 @@ namespace Wizard
 				Props.Move(player, x, y);
 			ontick = pinput.none;
 			Props.SortForRender();
+		}
+
+		public static World GenField()
+		{
+			World world = new World();
+			world.Background.Add(Texture.CreateTexture(world.Display.DrawContext, "img/backdrop.png"));
+			var tex = Texture.CreateTexture(world.Display.DrawContext, "img/bush.png");
+			world.Props.Spawn(new Prop(7, 8) { Texture = tex, CanMove = false });
+			world.Props.Spawn(new Prop(19, 8) { Texture = tex, CanMove = false });
+			world.Props.Spawn(new Prop(6, 16) { Texture = tex, CanMove = false });
+			world.Props.Spawn(new Prop(18, 18) { Texture = tex, CanMove = false });
+
+			return world;
 		}
 
 		[Flags]
