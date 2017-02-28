@@ -6,6 +6,7 @@ namespace Wizard
 	{
 		private const double MoveScale = 1.2;
 
+		public double Mass = 1.0;
 		public Point Position;
 		public Point MovingTo;
 		public Point[] Bounds;
@@ -40,20 +41,20 @@ namespace Wizard
 
 		public virtual void Spawn()
 		{
-			MovingTo = Position;
+			//MovingTo = Position;
 		}
 
 		public virtual void Tick()
 		{
-			Animating = false;
-			_MoveAnim = 0.0;
-			if (_Moving)
+			if (/*_Moving*/_MoveAnim >= 0.95)
 			{
+				_MoveAnim = 0.0;
 				Position = MovingTo;
 				_Moving = false;
+				Animating = false;
 			}
-			else
-				MovingTo = Position;
+			//else
+			//	MovingTo = Position;
 		}
 
 		private bool _Moving;
@@ -63,19 +64,21 @@ namespace Wizard
 
 		public void Draw(Render render, double delta_time)
 		{
-			int x = Position.X * DM.TileSize;
-			int y = Position.Y * DM.TileSize;
+			if (this is Explosion)
+				render = render;
+			int x = Position.X * Game.Active.TileSize;
+			int y = Position.Y * Game.Active.TileSize;
 			if (Animating)
 				// Times don't quite match up.. will need to make more clever or impl a timer!
-				_MoveAnim += delta_time * (1.0 / DM.TickTime) * MoveScale;
+				_MoveAnim += delta_time * (1.0 / Game.Active.TickTime) * MoveScale;
 			if (_MoveAnim > 1.0)
 				_MoveAnim = 1.0;
-			x += (int)((MovingTo.X - Position.X) * DM.TileSize * _MoveAnim);
-			y += (int)((MovingTo.Y - Position.Y) * DM.TileSize * _MoveAnim);
+			x += (int)((MovingTo.X - Position.X) * Game.Active.TileSize * _MoveAnim);
+			y += (int)((MovingTo.Y - Position.Y) * Game.Active.TileSize * _MoveAnim);
 
 			if (Animating && _MoveAnim >= 1.0)
 				Animating = false;
-			Texture.Draw(render, x, y, DM.TileSize, r, g, b);
+			Texture.Draw(render, x, y, Game.Active.TileSize, r, g, b, Game.Active.RenderScale);
 		}
 	}
 }

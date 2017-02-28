@@ -10,13 +10,15 @@ namespace Wizard.Draw
 {	
 	public delegate void UpdateJob(double delta_time);
 	public delegate void DrawJob(Render render, double delta_time);
+	public delegate void ClickEvent(int mouse_button, bool isdown);
 	public class Display : IDisposable
 	{
 		public Render DrawContext { get; private set; }
 		public bool Running { get; private set; }
 
-		public UpdateJob Update { get; private set; }
-		public DrawJob Draw { get; private set; }
+		public UpdateJob Update { get; set; }
+		public DrawJob Draw { get; set; }
+		public ClickEvent OnClick { get; set; }
 
 		public void Initialize( UpdateJob update_job, DrawJob draw_job )
 		{
@@ -62,10 +64,24 @@ namespace Wizard.Draw
 				case SDL_EventType.SDL_QUIT:
 					Quit();
 					break;
+				case SDL_EventType.SDL_MOUSEBUTTONDOWN:
+					OnClick?.Invoke(to_do.button.button, true);
+					break;
+				case SDL_EventType.SDL_MOUSEBUTTONUP:
+					OnClick?.Invoke(to_do.button.button, false);
+					break;
 				default:
 					break;
 			}
 		}
+
+		public Tuple<int,int> MousePosition()
+		{
+			int x, y;
+			SDL_GetMouseState(out x, out y);
+			return Tuple.Create(x, y);
+		}
+
 		public bool KeyDown( string key )
 		{
 			var sc = SDL_GetScancodeFromName(key);

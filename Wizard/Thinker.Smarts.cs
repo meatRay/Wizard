@@ -12,20 +12,21 @@ namespace Wizard.Helpers
 
 		public override void Spawn(World world_context)
 		{
-			Texture = Texture.CreateTexture(world_context.Display.DrawContext, "img/"+TextureName);
+			Texture = Texture.CreateTexture(Game.Active.Display.DrawContext, "img/"+TextureName);
 			base.Spawn(world_context);
 		}
 	}
 
 	public static class ThinkerExtentions
     {
-		/// <summary>
-		/// QUICK RECT
-		/// </summary>
-		/// <param name="me"></param>
-		/// <param name="context"></param>
-		/// <returns></returns>
-		public static IEnumerable<Prop> PropsInSight(this Thinker me, World context)
-			=> context.Props.All.Where(p => p.Position.Subtract(me.Position).Length() < me.Sight);
+
+		public static IEnumerable<Prop> VisibleTo(this PropManager manager, Thinker thinker)
+			=> manager.All.Where(p => p.Position.Subtract(thinker.Position).Length() < thinker.Sight);
+		public static T ClosestVisible<T>(this PropManager manager, Thinker to) where T : Prop
+			=> manager.VisibleTo(to)
+				.Select(p => p as T)
+				.Where(p => p != null)
+				.OrderBy(t => t.Position.Subtract(to.Position).Length())
+				.FirstOrDefault();
     }
 }

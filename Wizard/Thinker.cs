@@ -49,7 +49,7 @@ namespace Wizard
 
 		public virtual void Spawn(World world_context)
 		{
-			base.Spawn();
+			Spawn();
 			_Context = world_context;
 		}
 

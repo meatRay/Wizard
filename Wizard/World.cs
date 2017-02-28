@@ -5,11 +5,74 @@ using Wizard.Draw;
 
 namespace Wizard
 {
-	public class DM
+	public class Game : IDisposable
 	{
-		public static int TileSize = 32;
-		public static double TickTime = 0.5;
-		public static Random Dice = new Random();
+		public static Game Active;
+		public Display Display { get; private set; }
+
+		public Game()
+		{
+			Textures = new Dictionary<string, Texture>();
+			Display = Display.CreateDisplay("Wizard.Draw", 100, 100, 800, 576);
+		}
+
+		private void Update(double delta_time)
+		{
+			LoadedWorld.Update(delta_time);
+			bombtimr += delta_time;
+		}
+
+		double bombtimr = 0.0;
+
+		private void Click(int mouse_button, bool is_down)
+		{
+			if (bombtimr < 1.0)
+				return;
+			bombtimr = 0.0;
+			var pos = Display.MousePosition();
+			int tl_x = (int)Math.Floor(pos.Item1 / (TileSize * RenderScale)) - LoadedWorld.player.Position.X;
+			int tl_y = (int)Math.Floor(pos.Item2 / (TileSize * RenderScale)) - LoadedWorld.player.Position.Y;
+
+			var bomb = new Explosion(LoadedWorld.player.Position, 4.0, 6, 4) { Texture = Game.Active.LoadTexture("img/fireball.png") };
+			LoadedWorld.Props.Spawn(bomb);
+			bomb.SetMove( new Point(tl_x, tl_y) );
+		}
+
+		private void Draw(Render render, double delta_time)
+		{
+			LoadedWorld.Draw(render, delta_time);
+		}
+
+		public void Run()
+		{
+			if (LoadedWorld == null)
+				throw new Exception();
+			Display.Initialize(Update, Draw);
+			Display.OnClick = Click;
+			Display.Run();
+		}
+
+		public Texture LoadTexture(string name)
+		{
+			name = name.ToLower();
+			if (Textures.ContainsKey(name))
+				return Textures[name];
+			var tx = Texture.CreateTexture(Display.DrawContext, name);
+			Textures.Add(name, tx);
+			return tx;
+		}
+
+		public void Dispose()
+		{
+			Display.Dispose();
+		}
+
+		public World LoadedWorld;
+		public Dictionary<string, Texture> Textures;
+		public double RenderScale = 2.0;
+		public int TileSize = 32;
+		public double TickTime = 0.25;
+		public Random Dice = new Random();
 	}
 
 	public static class Directions
@@ -72,56 +135,45 @@ namespace Wizard
 		public static Point Zero { get; } = new Point(0, 0);
 	}
 
-	public class World : IDraw, IDisposable
+	public class World : IDraw
 	{
 		public List<IDraw> Background;
 		public PropManager Props { get; private set; }
-		public Display Display;
+		public Point MinBounds { get; private set; }
+		public Point MaxBounds { get; private set; }
+
+		//public Display Display;
 
 		public World()
-			: this(Display.CreateDisplay("Wizard.Draw", 100, 100, 800, 576))
-		{ }
-
-		public World(Display display)
 		{
 			Background = new List<IDraw>();
 			Props = new PropManager(this);
-			Display = display;
-
 		}
 
-		public void Run()
+		public static void Main()
 		{
-			Display.Initialize(d => Update(d), (r, d) => Draw(r, d));
-			Display.Run();
-		}
-
-		/*public static void Main()
-		{
-			using (var world = new World(Display.CreateDisplay()))
+			using (Game.Active = new Game())
 			{
-				var me = new Prop(new Point(0, 0)) { Texture = Texture.CreateTexture(world.Display.DrawContext, "img/sprite.png") };
+				var world = new World();
+				Game.Active.LoadedWorld = world;
+				world.MinBounds = new Point(0, 0);
+				world.MaxBounds = new Point(24, 17);
+
+				var me = new Prop(new Point(4, 3)) { Texture = Game.Active.LoadTexture("img/sprite.png") };
 				world.Props.Spawn(me);
 				world.player = me;
-				var tbl = Texture.CreateTexture(world.Display.DrawContext, "img/table_huge.png");
-				var prop = new Prop(new Point(3, 2), new Point[] { new Point(1, 0) }) { Texture = tbl };
+				var tbl = Game.Active.LoadTexture("img/table_huge.png");
+				var prop = new Prop(new Point(3, 2), new Point[] { new Point(1, 0) }) { Texture = tbl, Mass = 2.0 };
 				world.Props.Spawn(prop);
-				prop = new Prop(new Point(3, 6), new Point[] { new Point(1, 0) }) { Texture = tbl };
-				world.Props.Spawn(prop);
-				prop = new Prop(new Point(5, 2), new Point[] { new Point(1, 0) }) { Texture = tbl };
-				world.Props.Spawn(prop);
-				prop = new Prop(new Point(5, 6), new Point[] { new Point(1, 0) }) { Texture = tbl };
-				world.Props.Spawn(prop);
-				prop = new Prop(new Point(2, 4), new Point[] { new Point(1, 0) }) { Texture = tbl };
-				world.Props.Spawn(prop);
-				prop = new Prop(new Point(6, 4), new Point[] { new Point(1, 0) }) { Texture = tbl };
-				world.Props.Spawn(prop);
-				prop = new Wanderer(new Point(4, 4)) { Texture = Texture.CreateTexture(world.Display.DrawContext, "img/goblin.png") };
+				prop = new Prop(new Point(2, 4), new Point[] { new Point(1, 0) }) { Texture = tbl, Mass = 2.0 };
 				world.Props.Spawn(prop);
 
-				world.Run();
+				prop = new Wanderer(new Point(4, 4)) { CanMove = true, Texture = Game.Active.LoadTexture("img/goblin.png") };
+				world.Props.Spawn(prop);
+
+				Game.Active.Run();
 			}
-		}*/
+		}
 
 		public void Draw(Render render, double delta_time)
 		{
@@ -133,6 +185,7 @@ namespace Wizard
 		public Prop player;
 		public void Tick()
 		{
+			Props.SortForRender(true);
 			foreach (var prop in Props.All)
 				prop.Tick();
 			int x = 0, y = 0;
@@ -147,14 +200,17 @@ namespace Wizard
 			if (player != null)
 				Props.Move(player, x, y);
 			ontick = pinput.none;
-			Props.SortForRender();
+
+			Props.UpdateLists();
+
+			Props.SortForRender(false);
 		}
 
 		public static World GenField()
 		{
 			World world = new World();
-			world.Background.Add(Texture.CreateTexture(world.Display.DrawContext, "img/backdrop.png"));
-			var tex = Texture.CreateTexture(world.Display.DrawContext, "img/bush.png");
+			world.Background.Add(Game.Active.LoadTexture("img/backdrop.png"));
+			var tex = Game.Active.LoadTexture("img/bush.png");
 			world.Props.Spawn(new Prop(7, 8) { Texture = tex, CanMove = false });
 			world.Props.Spawn(new Prop(19, 8) { Texture = tex, CanMove = false });
 			world.Props.Spawn(new Prop(6, 16) { Texture = tex, CanMove = false });
@@ -171,20 +227,20 @@ namespace Wizard
 		public void Update(double delta_time)
 		{
 			_TickingTime += delta_time;
-			if (_TickingTime >= DM.TickTime)
+			if (_TickingTime >= Game.Active.TickTime)
 			{
-				_TickingTime -= DM.TickTime;
+				_TickingTime -= Game.Active.TickTime;
 				Tick();
 			}
 
-			if (Display.KeyDown("d"))
+			/*if (Display.KeyDown("d"))
 				ontick = pinput.right;
 			else if (Display.KeyDown("a"))
 				ontick = pinput.left;
 			if (Display.KeyDown("w"))
 				ontick |= pinput.up;
 			else if (Display.KeyDown("s"))
-				ontick |= pinput.down;
+				ontick |= pinput.down;*/
 		}
 
 		#region IDisposable Support
@@ -197,7 +253,7 @@ namespace Wizard
 				if (disposing)
 				{
 					// TODO: dispose managed state (managed objects).
-					Display.Dispose();
+					//Display.Dispose();
 				}
 
 				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

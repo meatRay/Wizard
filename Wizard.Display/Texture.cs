@@ -32,12 +32,16 @@ namespace Wizard.Draw
 		}
 		public void Draw(Render render, int x, int y, int tile_size )
 		{
-			Draw(render, x, y, tile_size, 255,255,255);
+			Draw(render, x, y, tile_size, 255,255,255, 1.0);
 		}
-		public void Draw(Render render, int x, int y, int tile_size, byte r, byte g, byte b)
+		public void Draw(Render render, int x, int y, int tile_size, byte r, byte g, byte b, double scale)
 		{
 			SDL_SetTextureColorMod(_Texture, r, g, b);
-			SDL_Rect rect = new SDL_Rect { x = x - ((Width-tile_size)/2), y = y - (Height - tile_size), w = Width, h = Height };
+			SDL_Rect rect = new SDL_Rect {
+				x = (int)((x/* - ((Width-tile_size)/2)*/)*scale),
+				y = (int)((y - (Height - tile_size))*scale),
+				w = (int)(Width*scale),
+				h = (int)(Height*scale) };
 			SDL_RenderCopy(render.Context, _Texture, (IntPtr)null, ref rect);
 		}
 		IntPtr _Texture;
