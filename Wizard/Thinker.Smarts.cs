@@ -1,11 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Wizard.Draw;
 
-namespace Wizard
+namespace Wizard.Helpers
 {
+	public class Creature : Thinker
+	{
+		public string TextureName { get; private set; }
+
+		public override void Spawn(World world_context)
+		{
+			Texture = Texture
+			base.Spawn(world_context);
+		}
+	}
     public static class ThinkerExtentions
     {
 		/// <summary>

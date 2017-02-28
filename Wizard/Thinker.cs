@@ -31,7 +31,7 @@ namespace Wizard
 			Think(_Context);
 		}
 
-		public void Spawn(World world_context)
+		public virtual void Spawn(World world_context)
 		{
 			base.Spawn();
 			_Context = world_context;

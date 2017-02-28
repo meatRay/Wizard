@@ -10,6 +10,7 @@ namespace Wizard
 		public Point MovingTo;
 		public Point[] Bounds;
 		public Texture Texture;
+		public bool CanMove = false;
 
 		public Prop(int x, int y, Point[] bounds = null)
 			: this(new Point(x, y), bounds)

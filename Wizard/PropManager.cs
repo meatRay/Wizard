@@ -37,14 +37,16 @@ namespace Wizard
 			if (direction.Equals(Point.Zero))
 				return false;
 			var targt = prop.Position.Add(direction);
+			// Too much Yoda logic...
 			Prop bunp = All.Where(
 				p => p != prop
 				&& (p.Position.Equals(targt)
 				|| p.Bounds.Select(b => b.Add(p.Position)).Any(b => b.Equals(targt)))
 			).FirstOrDefault();
-			if (bunp != null && !Move(bunp, direction))
+			if (bunp != null && (!bunp.CanMove || !Move(bunp, direction)))
 				return false;
 			prop.SetMove(direction);
+			_MovedProps.Add(prop);
 
 			return true;
 		}
