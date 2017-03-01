@@ -64,8 +64,6 @@ namespace Wizard
 
 		public void Draw(Render render, double delta_time)
 		{
-			if (this is Explosion)
-				render = render;
 			int x = Position.X * Game.Active.TileSize;
 			int y = Position.Y * Game.Active.TileSize;
 			if (Animating)
@@ -78,7 +76,7 @@ namespace Wizard
 
 			if (Animating && _MoveAnim >= 1.0)
 				Animating = false;
-			Texture.Draw(render, x, y, Game.Active.TileSize, r, g, b, Game.Active.RenderScale);
+			Texture.Draw(render, x, y, Game.Active.TileSize, r, g, b);
 		}
 	}
 }

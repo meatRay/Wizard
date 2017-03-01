@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wizard.Draw;
 
 namespace Wizard
 {
@@ -22,6 +23,8 @@ namespace Wizard
 			Force = force;
 			Lifetime = lifetime;
 			_forceat = force_at;
+			_boomtexture = Game.Active.LoadTexture("img/boom.png");
+			_boomtexture.centre = Texture.Clips.XCENTRE | Texture.Clips.YCENTRE;
 		}
 
 		public override void Spawn()
@@ -38,6 +41,7 @@ namespace Wizard
 				context.Props.Remove(this);
 			if (--_forceremain == 0)
 			{
+				Texture = _boomtexture;
 				foreach( var prop in context.Props.All.Where(p => p.Position.Subtract(Position).Length() <= Force))
 				{
 					var dir = prop.Position.Subtract(Position);
@@ -52,5 +56,6 @@ namespace Wizard
 
 		private int _forceat;
 		private int _forceremain;
+		private Texture _boomtexture;
 	}
 }

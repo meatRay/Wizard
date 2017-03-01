@@ -13,40 +13,75 @@ namespace Wizard
 		public Game()
 		{
 			Textures = new Dictionary<string, Texture>();
-			Display = Display.CreateDisplay("Wizard.Draw", 100, 100, 800, 576);
+			Display = Display.CreateDisplay("Wizard.Draw", 100, 100, 768, 576);
 		}
 
 		private void Update(double delta_time)
 		{
 			LoadedWorld.Update(delta_time);
 			bombtimr += delta_time;
-		}
 
+			var pos = Display.MousePosition();
+			int tl_x = (int)Math.Floor((pos.Item1 + Display.DrawContext.CameraX) / (TileSize * Display.DrawContext.RenderScale));
+			int tl_y = (int)Math.Floor((pos.Item2 + Display.DrawContext.CameraY) / (TileSize * Display.DrawContext.RenderScale));
+			mouse.Position = new Point(tl_x, tl_y);
+
+			if (Display.KeyDown("w"))
+				--Display.DrawContext.CameraY;
+			else if (Display.KeyDown("s"))
+				++Display.DrawContext.CameraY;
+			if (Display.KeyDown("d"))
+				++Display.DrawContext.CameraX;
+			else if (Display.KeyDown("a"))
+				--Display.DrawContext.CameraX;
+
+		}
+		Prop mouse;
 		double bombtimr = 0.0;
 
 		private void Click(int mouse_button, bool is_down)
 		{
-			if (bombtimr < 1.0)
-				return;
-			bombtimr = 0.0;
 			var pos = Display.MousePosition();
-			int tl_x = (int)Math.Floor(pos.Item1 / (TileSize * RenderScale)) - LoadedWorld.player.Position.X;
-			int tl_y = (int)Math.Floor(pos.Item2 / (TileSize * RenderScale)) - LoadedWorld.player.Position.Y;
+			int tl_x = (int)Math.Floor((pos.Item1 + Display.DrawContext.CameraX) / (TileSize * Display.DrawContext.RenderScale)) - LoadedWorld.player.Position.X;
+			int tl_y = (int)Math.Floor((pos.Item2 + Display.DrawContext.CameraY) / (TileSize * Display.DrawContext.RenderScale)) - LoadedWorld.player.Position.Y;
+			if (mouse_button == 1 && is_down)
+			{
+				Point tl = new Point(tl_x, tl_y).Add(LoadedWorld.player.Position);
+				LoadedWorld.player.Path.Clear();
+				Point togo = LoadedWorld.player.Position;
+				while (!togo.Equals(tl))
+				{
+					Point dif = tl.Subtract(togo);
+					dif = new Point(Math.Sign(dif.X), Math.Sign(dif.Y));
+					LoadedWorld.player.Path.Add(dif);
+					togo = togo.Add(dif);
+				}
+			}
+			if (mouse_button == 3 && is_down)
+			{
+				if (bombtimr < 1.0)
+					return;
+				bombtimr = 0.0;
 
-			var bomb = new Explosion(LoadedWorld.player.Position, 4.0, 6, 4) { Texture = Game.Active.LoadTexture("img/fireball.png") };
-			LoadedWorld.Props.Spawn(bomb);
-			bomb.SetMove( new Point(tl_x, tl_y) );
+				var bomb = new Explosion(LoadedWorld.player.Position, 4.0, 6, 4) { Texture = Game.Active.LoadTexture("img/fireball.png") };
+				LoadedWorld.Props.Spawn(bomb);
+				bomb.SetMove(new Point(tl_x, tl_y));
+			}
 		}
 
 		private void Draw(Render render, double delta_time)
 		{
 			LoadedWorld.Draw(render, delta_time);
+			foreach (var effect in Effects)
+				effect.Draw(render, delta_time);
 		}
 
 		public void Run()
 		{
 			if (LoadedWorld == null)
 				throw new Exception();
+			mouse = new Prop(0, 0) { Texture = LoadTexture("img/cursor.png") };
+			Effects.Add(mouse);
 			Display.Initialize(Update, Draw);
 			Display.OnClick = Click;
 			Display.Run();
@@ -69,8 +104,8 @@ namespace Wizard
 
 		public World LoadedWorld;
 		public Dictionary<string, Texture> Textures;
-		public double RenderScale = 2.0;
-		public int TileSize = 32;
+		public List<IDraw> Effects = new List<IDraw>();
+		public int TileSize = 64;
 		public double TickTime = 0.25;
 		public Random Dice = new Random();
 	}
@@ -137,7 +172,7 @@ namespace Wizard
 
 	public class World : IDraw
 	{
-		public List<IDraw> Background;
+		public List<Texture> Background;
 		public PropManager Props { get; private set; }
 		public Point MinBounds { get; private set; }
 		public Point MaxBounds { get; private set; }
@@ -146,7 +181,7 @@ namespace Wizard
 
 		public World()
 		{
-			Background = new List<IDraw>();
+			Background = new List<Texture>();
 			Props = new PropManager(this);
 		}
 
@@ -156,10 +191,11 @@ namespace Wizard
 			{
 				var world = new World();
 				Game.Active.LoadedWorld = world;
-				world.MinBounds = new Point(0, 0);
-				world.MaxBounds = new Point(24, 17);
+				world.MinBounds = new Point(1, 1);
+				world.MaxBounds = new Point((int)(10 / Game.Active.Display.DrawContext.RenderScale), (int)(7 / Game.Active.Display.DrawContext.RenderScale));
+				world.Background.Add(Game.Active.LoadTexture("img/woodfloor.png"));
 
-				var me = new Prop(new Point(4, 3)) { Texture = Game.Active.LoadTexture("img/sprite.png") };
+				var me = new Thinker(new Point(4, 3)) { Texture = Game.Active.LoadTexture("img/sprite.png") };
 				world.Props.Spawn(me);
 				world.player = me;
 				var tbl = Game.Active.LoadTexture("img/table_huge.png");
@@ -168,7 +204,10 @@ namespace Wizard
 				prop = new Prop(new Point(2, 4), new Point[] { new Point(1, 0) }) { Texture = tbl, Mass = 2.0 };
 				world.Props.Spawn(prop);
 
-				prop = new Wanderer(new Point(4, 4)) { CanMove = true, Texture = Game.Active.LoadTexture("img/goblin.png") };
+				prop = new Prop(new Point(4, 5)) { Texture = Game.Active.LoadTexture("img/table_long.png"), Mass = 1.0 };
+				world.Props.Spawn(prop);
+
+				prop = new Wanderer(new Point(4, 4)) { CanMove = true, Texture = Game.Active.LoadTexture("img/goblin_64.png") };
 				world.Props.Spawn(prop);
 
 				Game.Active.Run();
@@ -182,24 +221,12 @@ namespace Wizard
 			foreach (var prop in Props.All/*.OrderBy(p => p.Position.Y)*/)
 				prop.Draw(render, delta_time);
 		}
-		public Prop player;
+		public Thinker player;
 		public void Tick()
 		{
 			Props.SortForRender(true);
 			foreach (var prop in Props.All)
 				prop.Tick();
-			int x = 0, y = 0;
-			if (ontick.HasFlag(pinput.right))
-				x = 1;
-			else if (ontick.HasFlag(pinput.left))
-				x = -1;
-			if (ontick.HasFlag(pinput.up))
-				y = -1;
-			else if (ontick.HasFlag(pinput.down))
-				y = 1;
-			if (player != null)
-				Props.Move(player, x, y);
-			ontick = pinput.none;
 
 			Props.UpdateLists();
 

@@ -6,6 +6,8 @@ namespace Wizard.Draw
 	public class Render : IDisposable
 	{
 		internal IntPtr Context { get; private set; }
+		public int CameraX, CameraY;
+		public float RenderScale = 1.0f;
 
 		public static Render CreateRender(IntPtr window_context)
 		{

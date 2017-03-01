@@ -81,8 +81,11 @@ namespace Wizard
 				&& (p.Position.Equals(targt)
 				|| p.Bounds.Select(b => b.Add(p.Position)).Any(b => b.Equals(targt)))
 			).FirstOrDefault();
-			if (bunp != null && bunp.BlocksMove && (!bunp.CanMove || Move(bunp, direction)))
-				return false;
+			if (bunp != null && bunp.BlocksMove && (!bunp.CanMove || !Move(bunp, direction)))
+			{
+				var scl = new Point((int)Math.Sign(direction.X), (int)Math.Sign(direction.Y));
+				return Move(prop, direction.Subtract(scl));
+			}
 			prop.SetMove(direction);
 			if (direction.Y > 0)
 				_MovedDownProps.Add(prop);

@@ -11,6 +11,8 @@ namespace Wizard
 		public double Sight = 10;
 		public bool Alive { get; private set; } = true;
 
+		public List<Point> Path = new List<Point>();
+
 		public void Kill()
 		{
 			Alive = false;
@@ -43,6 +45,11 @@ namespace Wizard
 			if (Alive)
 			{
 				base.Tick();
+				if ( Path.Count > 0 && !Animating)
+				{
+					_Context.Props.Move(this, Path.First());
+					Path.RemoveAt(0);
+				}
 				Think(_Context);
 			}
 		}

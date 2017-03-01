@@ -35,7 +35,7 @@ namespace Wizard.Draw
 		{
 			SDL_SetRenderDrawColor(DrawContext.Context, 255, 255, 255, 255);
 			SDL_RenderClear(DrawContext.Context);
-
+			SDL_RenderSetScale(DrawContext.Context, DrawContext.RenderScale, DrawContext.RenderScale);
 			Draw?.Invoke(DrawContext, delta_time);
 
 			SDL_RenderPresent(DrawContext.Context);
