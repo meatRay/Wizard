@@ -63,7 +63,7 @@ namespace Wizard.Runes.TinyPG
 
     // rootlevel of the node tree
     [Serializable]
-    public partial class	+ : ParseNode
+    public partial class ParseTree: ParseNode
     {
         public ParseErrors Errors;
 

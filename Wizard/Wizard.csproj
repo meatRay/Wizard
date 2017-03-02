@@ -46,7 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crafting\WorldCrafter.cs" />
     <Compile Include="Explosion.cs" />
+    <Compile Include="Game.cs" />
     <Compile Include="Prop.cs" />
     <Compile Include="PropManager.cs" />
     <Compile Include="Thinker.cs" />
@@ -57,11 +59,18 @@
   <ItemGroup>
     <None Include="App.config" />
     <Compile Include="Thinker.Smarts.cs" />
+    <None Include="data\world.rne">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wizard.Display\Wizard.Draw.csproj">
       <Project>{cd715022-f766-473f-bf76-7e6ff37414fa}</Project>
       <Name>Wizard.Draw</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wizard.Scripts\Wizard.Scripts.csproj">
+      <Project>{5E59F52C-DEE4-479C-9035-71920F76781E}</Project>
+      <Name>Wizard.Scripts</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

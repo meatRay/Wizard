@@ -17,8 +17,8 @@ namespace Wizard.Runes
 		public static Rune[] CreateFrom( string input, string file_name )
 		{
 			RuneParser = new Parser(new Scanner());
-			ParseTree tree = new RuneTree();
-			tree = RuneParser.Parse(input, file_name, tree);
+			RuneTree tree = new RuneTree();
+			tree = RuneParser.Parse(input, file_name, tree) as RuneTree;
 			return tree.Eval(null) as Rune[];
 		}
 

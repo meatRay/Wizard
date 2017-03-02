@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Crafter.cs" />
     <Compile Include="Rune.cs" />
     <Compile Include="RuneCrafter.cs" />
     <Compile Include="TinyPG\Parser.cs" />
