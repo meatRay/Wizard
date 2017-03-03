@@ -1,34 +1,35 @@
-﻿# SAVE;
+﻿/* Meta tag to cache WRune file.
+ * Will be useful when referencing WRune content in other files */
+# SAVE;
 
 WORLD:
-
-BACKDROP "img/woodfloor.png"
-
-PROPS:
-	THINKER:
-		X 4 Y 3
-		PLAYER;
-		TEXTURE "img/sprite.png"
-	;
-	PROP:
-		X 3 Y 2
-		BOUNDS: X 1 Y 2 ;
-		TEXTURE "img/table_huge.png"
-		MASS 2
-	;
-	PROP:
-		X 2 Y 4
-		BOUNDS: X 1 Y 2 ;
-		TEXTURE "img/table_huge.png"
-		MASS 2
-	;
-	PROP:
-		X 4 Y 5
-		TEXTURE "img/table_long.png"
-	;
-	WANDERER:
-		X 4 Y 4
-		CANMOVE;
-		TEXTURE "img/goblin_64.png"
-	;
-; ;
+	BACKDROP "img/woodfloor.png"
+	PROPS:
+		THINKER:
+			X 4 Y 3
+			PLAYER;
+			TEXTURE "img/sprite.png"
+		;
+		PROP:
+			X 3 Y 2
+			BOUNDS: X 1 Y 2 ;
+			TEXTURE "img/table_huge.png"
+			MASS 2
+		;
+		PROP:
+			X 2 Y 4
+			BOUNDS: X 1 Y 2 ;
+			TEXTURE "img/table_huge.png"
+			MASS 2
+		;
+		PROP:
+			X 4 Y 5
+			TEXTURE "img/table_long.png"
+		;
+		WANDERER:
+			X 4 Y 4
+			CANMOVE;
+			TEXTURE "img/goblin_64.png"
+		;
+	; 
+;

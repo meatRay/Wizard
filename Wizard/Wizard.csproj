@@ -46,7 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crafting\Props\PropCrafter.cs" />
     <Compile Include="Crafting\PropManagerCrafter.cs" />
+    <Compile Include="Crafting\Props\WandererCrafter.cs" />
+    <Compile Include="Crafting\TextureCrafter.cs" />
+    <Compile Include="Crafting\Props\ThinkerCrafter.cs" />
     <Compile Include="Crafting\WorldCrafter.cs" />
     <Compile Include="Explosion.cs" />
     <Compile Include="Game.cs" />

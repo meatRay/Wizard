@@ -1,31 +1,38 @@
-﻿using Wizard.Runes;
+﻿using Wizard.Draw;
+using Wizard.Runes;
 
 namespace Wizard.Crafting
 {
 	class WorldCrafter : RuneCrafter<World>
 	{
-		public Game GameContext { get; private set; }
+		// OMFG I can Craft<Texture>()s too
+		/*public Game GameContext { get; private set; }*/
 
 		public override World Craft(Rune rune)
 		{
 			World world = new World();
+			PropManagerCrafter.RegisterNew(Master, world);
 
 			var complx = rune as ComplexRune;
 			world.Background.Add(
-				GameContext.LoadTexture(
-					complx.Read<TokenRune>("BACKDROP").Read<string>()
+				Master.Craft<Texture>(
+					complx.Read<TokenRune>("BACKDROP")
 			));
+
+			var r_props = complx.Read<ComplexRune>("PROPS");
+			if (r_props != null)
+				world.Props = Master.Craft<PropManager>(r_props);
 
 			return world;
 		}
 
-		public static void RegisterNew(RuneMaster master, Game game_context)
-			=> new WorldCrafter(master, game_context);
+		public static void RegisterNew(RuneMaster master/*, Game game_context*/)
+			=> new WorldCrafter(master/*, game_context*/);
 
-		protected WorldCrafter(RuneMaster master, Game game_context)
+		protected WorldCrafter(RuneMaster master/*, Game game_context*/)
 			: base(master)
 		{
-			GameContext = game_context;
+			//GameContext = game_context;
 		}
 	}
 }

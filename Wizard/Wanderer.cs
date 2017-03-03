@@ -21,7 +21,7 @@ namespace Wizard
 			if (rand.Next(4) == 0)
 			{
 				var dir = new Point(rand.Next(-1, 2), rand.Next(-1, 2));
-				//context.Props.Move(this, dir);
+				context.Props.Move(this, dir);
 			}
 		}
 

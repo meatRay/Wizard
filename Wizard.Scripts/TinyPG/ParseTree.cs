@@ -229,7 +229,7 @@ namespace Wizard.Runes.TinyPG
 				object token;
 				var atom = val.Nodes.First();
 				if (atom.Token.Type == TokenType.NUMBER)
-					token = double.Parse(atom.Token.Text);
+					token = int.Parse(atom.Token.Text);
 				else
 					token = atom.Token.Text.Substring(1, atom.Token.Text.Length - 2);
 				return new TokenRune(r_name, token);

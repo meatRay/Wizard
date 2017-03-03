@@ -25,7 +25,11 @@ namespace Wizard
 			// Works, but is confusing.  "Do I need to keep a reference to this?  How do I use it?"
 			//new WorldCrafter(Content, this);
 
-			WorldCrafter.RegisterNew(Content, this);
+			TextureCrafter.RegisterNew(Content, this);
+			PropCrafter.RegisterNew(Content);
+			ThinkerCrafter.RegisterNew(Content);
+			WandererCrafter.RegisterNew(Content);
+			WorldCrafter.RegisterNew(Content);
 		}
 
 		private void Update(double delta_time)

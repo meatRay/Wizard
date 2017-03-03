@@ -70,7 +70,7 @@ namespace Wizard
 	public class World : IDraw
 	{
 		public List<Texture> Background;
-		public PropManager Props { get; private set; }
+		public PropManager Props { get; internal set; }
 		public Point MinBounds { get; private set; }
 		public Point MaxBounds { get; private set; }
 
@@ -93,22 +93,8 @@ namespace Wizard
 				Game.Active.LoadedWorld = world;
 				world.MinBounds = new Point(1, 1);
 				world.MaxBounds = new Point((int)(10 / Game.Active.Display.DrawContext.RenderScale), (int)(7 / Game.Active.Display.DrawContext.RenderScale));
-				//world.Background.Add(Game.Active.LoadTexture("img/woodfloor.png"));
 
-				var me = new Thinker(new Point(4, 3)) { Texture = Game.Active.LoadTexture("img/sprite.png") };
-				world.Props.Spawn(me);
-				world.player = me;
-				var tbl = Game.Active.LoadTexture("img/table_huge.png");
-				var prop = new Prop(new Point(3, 2), new Point[] { new Point(1, 0) }) { Texture = tbl, Mass = 2.0 };
-				world.Props.Spawn(prop);
-				prop = new Prop(new Point(2, 4), new Point[] { new Point(1, 0) }) { Texture = tbl, Mass = 2.0 };
-				world.Props.Spawn(prop);
-
-				prop = new Prop(new Point(4, 5)) { Texture = Game.Active.LoadTexture("img/table_long.png"), Mass = 1.0 };
-				world.Props.Spawn(prop);
-
-				prop = new Wanderer(new Point(4, 4)) { CanMove = true, Texture = Game.Active.LoadTexture("img/goblin_64.png") };
-				world.Props.Spawn(prop);
+				world.player = world.Props.All.Select(p => p as Thinker).First(p => p != null);
 
 				Game.Active.Run();
 			}

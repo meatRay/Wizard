@@ -14,6 +14,18 @@ namespace Wizard.Crafting
 		public override PropManager Craft(Rune rune)
 		{
 			var manager = new PropManager(WorldContext);
+
+			var complx = rune as ComplexRune;
+
+			foreach (var r_prop in complx.ReadAll<ComplexRune>("PROP"))
+				manager.Spawn(Master.Craft<Prop>(r_prop));
+			foreach (var r_prop in complx.ReadAll<ComplexRune>("THINKER"))
+				manager.Spawn(Master.Craft<Thinker>(r_prop));
+			foreach (var r_prop in complx.ReadAll<ComplexRune>("WANDERER"))
+				manager.Spawn(Master.Craft<Wanderer>(r_prop));
+
+			manager.UpdateLists();
+
 			return manager;
 		}
 
