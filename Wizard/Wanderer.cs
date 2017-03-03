@@ -18,13 +18,11 @@ namespace Wizard
 
 		public override void Think(World context)
 		{
-			if (rand.Next(4) == 0)
+			if (Game.Active.Dice.Next(4) == 0)
 			{
-				var dir = new Point(rand.Next(-1, 2), rand.Next(-1, 2));
+				var dir = new Point(Game.Active.Dice.Next(-1, 2), Game.Active.Dice.Next(-1, 2));
 				context.Props.Move(this, dir);
 			}
 		}
-
-		Random rand = new Random();
 	}
 }

@@ -78,8 +78,8 @@ namespace Wizard
 			// Too much Yoda logic...
 			Prop bunp = All.Where(
 				p => p != prop
-				&& (p.Position.Equals(targt)
-				|| p.Bounds.Select(b => b.Add(p.Position)).Any(b => b.Equals(targt)))
+				&& (p.MovingTo.Equals(targt)
+				|| p.Bounds.Select(b => b.Add(p.MovingTo)).Any(b => b.Equals(targt)))
 			).FirstOrDefault();
 			if (bunp != null && bunp.BlocksMove && (!bunp.CanMove || !Move(bunp, direction)))
 			{

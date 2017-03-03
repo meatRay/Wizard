@@ -38,11 +38,16 @@ namespace Wizard
 		{
 			base.Think(context);
 			if (--LifeRemaining <= 0)
+			{
 				context.Props.Remove(this);
+				var brn = new Prop(Position) { Texture = Game.Active.LoadTexture("img/burn.png"), BlocksMove = false, CanMove = false };
+				brn.Events.Enqueue(new Expires(brn, context.Props, 50));
+				context.Props.Spawn(brn);
+			}
 			if (--_forceremain == 0)
 			{
 				Texture = _boomtexture;
-				foreach( var prop in context.Props.All.Where(p => p.Position.Subtract(Position).Length() <= Force))
+				foreach( var prop in context.Props.All.Where(p => p.CanMove && p.Position.Subtract(Position).Length() <= Force))
 				{
 					var dir = prop.Position.Subtract(Position);
 					var t_ply = Force - dir.Length() + 1 - prop.Mass;

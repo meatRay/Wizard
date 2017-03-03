@@ -1,7 +1,36 @@
-﻿using Wizard.Draw;
+﻿using System;
+using System.Collections.Generic;
+using Wizard.Draw;
 
 namespace Wizard
 {
+	public abstract class Happens
+	{
+		public Prop To { get; private set; }
+		public Happens(Prop prop)
+		{
+			To = prop;
+		}
+		public abstract void Update();
+	}
+	public class Expires : Happens
+	{
+		public int Lifetime { get; private set; }
+		public PropManager Context { get; private set; }
+		public Expires(Prop prop, PropManager context, int after_time )
+			:base(prop)
+		{
+			Context = context;
+			Lifetime = after_time;
+		}
+		public override void Update()
+		{
+			--Lifetime;
+			if (Lifetime <= 0)
+				Context.Remove(To);
+		}
+	}
+
 	public class Prop : IDraw
 	{
 		private const double MoveScale = 1.2;
@@ -11,10 +40,10 @@ namespace Wizard
 		public Point MovingTo;
 		public Point[] Bounds;
 		public Texture Texture;
-		public bool CanMove = false;
+		public bool CanMove = true;
 		public bool BlocksMove = true;
 		public Point Direction = Point.Zero;
-
+		public Queue<Happens> Events = new Queue<Happens>();
 
 		public Prop(int x, int y, Point[] bounds = null)
 			: this(new Point(x, y), bounds)
@@ -53,6 +82,8 @@ namespace Wizard
 				_Moving = false;
 				Animating = false;
 			}
+			foreach (var evnt in Events)
+				evnt.Update();
 			//else
 			//	MovingTo = Position;
 		}

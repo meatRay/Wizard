@@ -5,20 +5,21 @@
 WORLD:
 	BACKDROP "img/woodfloor.png"
 	PROPS:
-		WANDERER:
+		THINKER:
+			PLAYER;
 			X 4 Y 3
 			PLAYER;
 			TEXTURE "img/sprite.png"
 		;
-		PROP:
+		WANDERER:
 			X 3 Y 2
-			BOUNDS: X 1 Y 2 ;
+			BOUNDS: X 1 Y 0 ;
 			TEXTURE "img/table_huge.png"
 			MASS 2
 		;
 		PROP:
 			X 2 Y 4
-			BOUNDS: X 1 Y 2 ;
+			BOUNDS: X 1 Y 0 ;
 			TEXTURE "img/table_huge.png"
 			MASS 2
 		;
@@ -26,8 +27,7 @@ WORLD:
 			X 4 Y 5
 			TEXTURE "img/table_long.png"
 		;
-		THINKER:
-			PLAYER;
+		WANDERER:
 			X 4 Y 4
 			CANMOVE;
 			TEXTURE "img/goblin_64.png"

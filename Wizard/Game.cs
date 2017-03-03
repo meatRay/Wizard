@@ -75,7 +75,7 @@ namespace Wizard
 			}
 			if (mouse_button == 3 && is_down)
 			{
-				if (bombtimr < 1.0)
+				if (bombtimr < 0.5)
 					return;
 				bombtimr = 0.0;
 
