@@ -9,12 +9,11 @@ namespace Wizard.Runes
 {
 	public class RuneMaster
 	{
-		// loaded runes...
-		public List<Crafter> Implementations;
+		public IEnumerable<Crafter> Implementations => ImplementList;
 
 		public RuneMaster()
 		{
-			Implementations = new List<Crafter>();
+			ImplementList = new List<Crafter>();
 		}
 
 		public T Craft<T>(Rune rune)
@@ -28,10 +27,16 @@ namespace Wizard.Runes
 			}
 			throw new Exception($"No implemention for crafting {typeof(T).Name} loaded");
 		}
+
+		internal List<Crafter> ImplementList;
 	}
 
 	public abstract class RuneCrafter<T> : Crafter
 	{
+		protected RuneCrafter(RuneMaster master)
+			:base(master)
+		{ }
+
 		public abstract T Craft(Rune rune);
 	}
 }

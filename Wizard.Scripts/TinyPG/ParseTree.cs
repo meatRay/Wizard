@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -63,7 +64,7 @@ namespace Wizard.Runes.TinyPG
 
     // rootlevel of the node tree
     [Serializable]
-    public partial class ParseTree: ParseNode
+    public partial class ParseTree : ParseNode
     {
         public ParseErrors Errors;
 
@@ -206,8 +207,11 @@ namespace Wizard.Runes.TinyPG
 
         protected virtual object EvalStart(ParseTree tree, params object[] paramlist)
         {
-            return "Could not interpret input; no semantics implemented.";
-        }
+			return new ComplexRune("Rune",
+					Nodes.Where(n => n.Token.Type == TokenType.Item)
+					.Select(i => i.Eval(tree, paramlist) as Rune)
+					.ToArray());
+		}
 
         protected virtual object EvalMeta(ParseTree tree, params object[] paramlist)
         {
@@ -218,10 +222,28 @@ namespace Wizard.Runes.TinyPG
 
         protected virtual object EvalItem(ParseTree tree, params object[] paramlist)
         {
-            foreach (var node in Nodes)
-                node.Eval(tree, paramlist);
-            return null;
-        }
+			string r_name = Nodes.First(n => n.Token.Type == TokenType.WORD).Token.Text;
+			var val = Nodes.First(n => n.Token.Type == TokenType.Value).Nodes.First();
+			if (val.Token.Type == TokenType.Atom)
+			{
+				object token;
+				var atom = val.Nodes.First();
+				if (atom.Token.Type == TokenType.NUMBER)
+					token = double.Parse(atom.Token.Text);
+				else
+					token = atom.Token.Text.Substring(1, atom.Token.Text.Length - 2);
+				return new TokenRune(r_name, token);
+			}
+			else if (val.Token.Type == TokenType.Group)
+			{
+				return new ComplexRune(r_name,
+					val.Nodes.Where(n => n.Token.Type == TokenType.Item)
+					.Select(i => i.Eval(tree, paramlist) as Rune)
+					.ToArray());
+			}
+			else
+				return new Rune(r_name);
+		}
 
         protected virtual object EvalValue(ParseTree tree, params object[] paramlist)
         {

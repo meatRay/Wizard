@@ -8,7 +8,12 @@ namespace Wizard.Runes.TinyPG
 {
 	class RuneTree : ParseTree
 	{
-		protected override object EvalStart(ParseTree tree, params object[] paramlist)
+		public Rune[] RuneEval()
+		{
+			foreach( var node in Nodes)
+		}
+
+		protected object EvalStart(ParseTree tree, params object[] paramlist)
 		{
 			return Nodes.Where(n => n.Token.Type == TokenType.Item)
 					.Select(i => i.Eval(tree, paramlist) as Rune)

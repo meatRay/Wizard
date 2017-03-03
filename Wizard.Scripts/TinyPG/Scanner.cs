@@ -48,7 +48,7 @@ namespace Wizard.Runes.TinyPG
             Patterns.Add(TokenType.HIDEBLOCK, regex);
             Tokens.Add(TokenType.HIDEBLOCK);
 
-            regex = new Regex(@""".+""", RegexOptions.Compiled);
+            regex = new Regex(@"@?\""(\""\""|[^\""])*\""", RegexOptions.Compiled);
             Patterns.Add(TokenType.QUOTE, regex);
             Tokens.Add(TokenType.QUOTE);
 
@@ -60,13 +60,13 @@ namespace Wizard.Runes.TinyPG
             Patterns.Add(TokenType.SCLOSE, regex);
             Tokens.Add(TokenType.SCLOSE);
 
-            regex = new Regex(@"\w+", RegexOptions.Compiled);
-            Patterns.Add(TokenType.WORD, regex);
-            Tokens.Add(TokenType.WORD);
-
             regex = new Regex(@"\d+", RegexOptions.Compiled);
             Patterns.Add(TokenType.NUMBER, regex);
             Tokens.Add(TokenType.NUMBER);
+
+            regex = new Regex(@"\w+", RegexOptions.Compiled);
+            Patterns.Add(TokenType.WORD, regex);
+            Tokens.Add(TokenType.WORD);
 
             regex = new Regex("#", RegexOptions.Compiled);
             Patterns.Add(TokenType.META, regex);
@@ -249,8 +249,8 @@ namespace Wizard.Runes.TinyPG
             QUOTE   = 10,
             SOPEN   = 11,
             SCLOSE  = 12,
-            WORD    = 13,
-            NUMBER  = 14,
+            NUMBER  = 13,
+            WORD    = 14,
             META    = 15,
             WHITESPACE= 16
     }

@@ -46,7 +46,7 @@
     <Compile Include="TinyPG\Parser.cs" />
     <Compile Include="TinyPG\ParseTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TinyPG\RuneTree.cs" />
+    <None Include="TinyPG\RuneTree.cs" />
     <Compile Include="TinyPG\Scanner.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crafting\PropManagerCrafter.cs" />
     <Compile Include="Crafting\WorldCrafter.cs" />
     <Compile Include="Explosion.cs" />
     <Compile Include="Game.cs" />

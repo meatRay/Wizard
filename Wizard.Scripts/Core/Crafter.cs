@@ -8,5 +8,12 @@ namespace Wizard.Runes.Core
 {
 	public class Crafter
 	{
+		public RuneMaster Master { get; private set; }
+
+		protected Crafter( RuneMaster master )
+		{
+			Master = master;
+			Master.ImplementList.Add(this);
+		}
 	}
 }

@@ -86,8 +86,8 @@ namespace Wizard
 		{
 			using (Game.Active = new Game())
 			{
-				var read = Rune.CreateFrom(File.ReadAllText("data/world.rne"), "data/world.rne");
-				var world = Game.Active.Content.Craft<World>(read[0]);
+				var rune = Rune.CreateFrom( File.ReadAllText("data/world.rne"), "data/world.rne" );
+				var world = Game.Active.Content.Craft<World>( rune.Read("WORLD") );
 
 				//var world = new World();
 				Game.Active.LoadedWorld = world;

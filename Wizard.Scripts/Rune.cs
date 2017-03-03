@@ -14,12 +14,11 @@ namespace Wizard.Runes
 			Word = word;
 		}
 		
-		public static Rune[] CreateFrom( string input, string file_name )
+		public static ComplexRune CreateFrom( string input, string file_name )
 		{
 			RuneParser = new Parser(new Scanner());
-			RuneTree tree = new RuneTree();
-			tree = RuneParser.Parse(input, file_name, tree) as RuneTree;
-			return tree.Eval(null) as Rune[];
+			var tree = RuneParser.Parse(input, file_name);
+			return tree.Eval(null) as ComplexRune;
 		}
 
 		private static Parser RuneParser;

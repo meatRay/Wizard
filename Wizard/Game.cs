@@ -18,7 +18,14 @@ namespace Wizard
 			Display = Display.CreateDisplay("Wizard.Draw", 100, 100, 768, 576);
 
 			Content = new RuneMaster();
-			Content.Implementations.Add(new WorldCrafter(this));
+
+			// Crafter needs a reference to master to request Subcrafts
+			//Content.Implementations.Add(new WorldCrafter(this));
+
+			// Works, but is confusing.  "Do I need to keep a reference to this?  How do I use it?"
+			//new WorldCrafter(Content, this);
+
+			WorldCrafter.RegisterNew(Content, this);
 		}
 
 		private void Update(double delta_time)
