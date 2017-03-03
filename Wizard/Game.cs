@@ -27,7 +27,7 @@ namespace Wizard
 
 			TextureCrafter.RegisterNew(Content, this);
 			PropCrafter.RegisterNew(Content);
-			ThinkerCrafter.RegisterNew(Content);
+			
 			WandererCrafter.RegisterNew(Content);
 			WorldCrafter.RegisterNew(Content);
 		}

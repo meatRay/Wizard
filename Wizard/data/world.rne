@@ -5,7 +5,7 @@
 WORLD:
 	BACKDROP "img/woodfloor.png"
 	PROPS:
-		THINKER:
+		WANDERER:
 			X 4 Y 3
 			PLAYER;
 			TEXTURE "img/sprite.png"
@@ -26,7 +26,8 @@ WORLD:
 			X 4 Y 5
 			TEXTURE "img/table_long.png"
 		;
-		WANDERER:
+		THINKER:
+			PLAYER;
 			X 4 Y 4
 			CANMOVE;
 			TEXTURE "img/goblin_64.png"

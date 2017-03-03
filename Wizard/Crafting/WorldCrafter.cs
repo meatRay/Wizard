@@ -12,6 +12,7 @@ namespace Wizard.Crafting
 		{
 			World world = new World();
 			PropManagerCrafter.RegisterNew(Master, world);
+			ThinkerCrafter.RegisterNew(Master, world);
 
 			var complx = rune as ComplexRune;
 			world.Background.Add(

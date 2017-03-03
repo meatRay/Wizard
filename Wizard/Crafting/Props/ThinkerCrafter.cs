@@ -10,9 +10,12 @@ namespace Wizard.Crafting
 {
 	class ThinkerCrafter : RuneCrafter<Thinker>
 	{
-		protected ThinkerCrafter(RuneMaster master) 
+		public World WorldContext { get; private set; }
+		protected ThinkerCrafter(RuneMaster master, World world_context) 
 			: base(master)
-		{	}
+		{
+			WorldContext = world_context;
+		}
 
 		public override Thinker Craft(Rune rune)
 		{ 
@@ -38,6 +41,10 @@ namespace Wizard.Crafting
 			}
 
 			var prop = new Thinker(p, bounds);
+
+			if (complx.Read("PLAYER") != null)
+				WorldContext.player = prop;
+
 			prop.Texture = Master.Craft<Texture>(complx.Read<TokenRune>("TEXTURE"));
 
 			var r_mass = complx.Read<TokenRune>("MASS");
@@ -47,7 +54,7 @@ namespace Wizard.Crafting
 			return prop;
 		}
 
-		public static void RegisterNew(RuneMaster master)
-			=> new ThinkerCrafter(master);
+		public static void RegisterNew(RuneMaster master, World world_context)
+			=> new ThinkerCrafter(master, world_context);
 	}
 }

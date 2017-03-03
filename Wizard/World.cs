@@ -94,8 +94,6 @@ namespace Wizard
 				world.MinBounds = new Point(1, 1);
 				world.MaxBounds = new Point((int)(10 / Game.Active.Display.DrawContext.RenderScale), (int)(7 / Game.Active.Display.DrawContext.RenderScale));
 
-				world.player = world.Props.All.Select(p => p as Thinker).First(p => p != null);
-
 				Game.Active.Run();
 			}
 		}
